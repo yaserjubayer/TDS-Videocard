@@ -1,0 +1,9 @@
+{
+  "name": "TDS Videocard Studio",
+  "short_name": "Videocard",
+  "start_url": "./videocard.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#a31f24",
+  "orientation": "portrait"
+}

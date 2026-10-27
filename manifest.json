@@ -1,9 +1,13 @@
 {
-  "name": "TDS Videocard Studio",
-  "short_name": "Videocard",
-  "start_url": "./videocard.html",
-  "display": "standalone",
   "background_color": "#111111",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "TDS Videos",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "TDSV",
+  "start_url": "/",
   "theme_color": "#a31f24",
-  "orientation": "portrait"
+  "id": "Yaser",
+  "description": "Video card generator that produces from any video, for The Dhaka Standard"
 }

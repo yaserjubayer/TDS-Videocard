@@ -9,7 +9,7 @@
   "orientation": "portrait",
   "dir": "ltr",
   "lang": "en",
-  "start_url": "./videocard.html",
+  "start_url": "./index.html",
   "scope": "./",
   "categories": ["news", "video"],
   "icons": [

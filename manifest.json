@@ -1,23 +1,19 @@
 {
-  "name": "TDS Videos",
-  "short_name": "TDSVids",
-  "id": "tds-videocard-studio",
-  "description": "App produces videocards from videos, following TDS branding.",
   "background_color": "#111111",
-  "theme_color": "#a31f24",
-  "display": "standalone",
-  "orientation": "portrait",
   "dir": "ltr",
-  "lang": "en",
-  "start_url": "./videocard.html",
-  "scope": "./",
-  "categories": ["news", "video"],
-  "icons": [
-    {
-      "src": "TDS Logo no background.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "display": "standalone",
+  "name": "TDS Videos",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "TDSVids",
+  "start_url": "https://yaserjubayer.github.io/TDS-Videocard/videocard.html",
+  "theme_color": "#a31f24",
+  "description": "App produces videocards from videos, following TDS branding.",
+  "id": "io.github.yaserjubayer.videocard",
+  "categories": [
+    "news",
+    "photo &amp; video",
+    "video"
+  ],
+  "lang": "en"
 }

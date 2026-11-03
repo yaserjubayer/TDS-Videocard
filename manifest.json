@@ -12,8 +12,15 @@
   "description": "App produces videocards from videos, following TDS branding.",
   "categories": [
     "news",
-    "photo &amp; video",
     "video"
   ],
-  "lang": "en"
+  "lang": "en",
+  "icons": [
+    {
+      "src": "TDS Logo no background.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

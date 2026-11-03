@@ -9,7 +9,6 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#a31f24" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="icon" type="image/png" href="TDS Logo no background.png" />
   <link rel="apple-touch-icon" href="TDS Logo no background.png" />
 
   <!-- Tailwind CSS via CDN -->
@@ -113,7 +112,6 @@
 <body class="min-h-screen bg-tds-dark text-gray-100 flex flex-col selection:bg-tds-red selection:text-white">
   <span class="font-preload" aria-hidden="true">TDS EXCLUSIVE HEADLINE</span>
 
-  <!-- Hidden Video Element for decoding & seeking -->
   <video
     id="hidden-video"
     class="hidden"
@@ -123,16 +121,6 @@
     crossorigin="anonymous"
   ></video>
 
-  <!-- Hidden Brand Logo Image for Canvas Watermark Rendering -->
-  <img
-    id="tds-brand-logo"
-    src="TDS Logo no background.png"
-    alt="TDS Brand Logo"
-    class="hidden"
-    crossorigin="anonymous"
-  />
-
-  <!-- WebCodecs Unsupported Error Banner -->
   <div
     id="webcodecs-error-banner"
     class="hidden bg-red-950/95 border-b-2 border-tds-red text-red-100 px-4 py-3.5 shadow-lg z-50"
@@ -155,17 +143,11 @@
     </div>
   </div>
 
-  <!-- Top Navigation Header -->
   <header class="border-b border-tds-border bg-tds-panel/90 backdrop-blur sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow-md shadow-tds-red/20 shrink-0">
-          <img
-            src="TDS Logo no background.png"
-            alt="The Dhaka Standard Logo"
-            class="h-full w-auto object-contain"
-          />
-        </div>
+      <div class="h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow-md shadow-tds-red/20 shrink-0">
+  <img src="TDS Logo no background.png" alt="The Dhaka Standard Logo" class="h-full w-auto object-contain" />
+      </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-oswald font-bold text-base sm:text-lg tracking-wide uppercase text-white leading-none">
@@ -190,11 +172,9 @@
     </div>
   </header>
 
-  <!-- Main Mobile-First Studio Frame -->
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5 sm:py-8">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <!-- Left / Top Column: 4:5 Live Canvas Preview -->
       <section class="lg:col-span-5 flex flex-col items-center">
         <div class="w-full max-w-[380px] bg-tds-panel border border-tds-border rounded-2xl p-3 sm:p-4 shadow-2xl">
           <div class="flex items-center justify-between mb-2.5 px-1">
@@ -247,10 +227,8 @@
         </div>
       </section>
 
-      <!-- Right / Bottom Column: Controls, Trimmer, Headline & Export -->
       <section class="lg:col-span-7 flex flex-col gap-5">
 
-        <!-- Step 1: Video Upload Dropzone -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
@@ -289,7 +267,6 @@
           </label>
         </div>
 
-        <!-- Step 2: 5-30s Video Trimmer Section -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div class="flex items-center gap-2">
@@ -403,35 +380,10 @@
           </div>
         </div>
 
-        <!-- Step 3: Logo Placement & Framing Controls -->
-        <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
-            <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
-              Logo Placement Corner
-            </h2>
-          </div>
-          <div>
-            <label for="logo-corner-input" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
-              Select Logo Position on Canvas
-            </label>
-            <select
-              id="logo-corner-input"
-              class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none px-3.5 py-2.5 text-sm text-white cursor-pointer"
-            >
-              <option value="top-left" selected>Top-Left Corner</option>
-              <option value="top-right">Top-Right Corner</option>
-              <option value="bottom-left">Bottom-Left Corner</option>
-              <option value="bottom-right">Bottom-Right Corner</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Step 4: Category Desk & Main Headline Textarea -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">4</span>
+              <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
               <label for="main-headline-input" class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
                 Desk Category &amp; Main Headline
               </label>
@@ -475,40 +427,19 @@
             maxlength="160"
             placeholder="Enter breaking news headline for the videocard..."
             class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none p-3.5 text-sm sm:text-base text-white placeholder-gray-500 resize-none leading-relaxed"
-          >CUTE FEMALE TIGRESSES</textarea>
-
-          <!-- Headline Vertical Position Slider -->
-          <div class="mt-4 pt-4 border-t border-tds-border">
-            <div class="flex items-center justify-between mb-2">
-              <label for="headlineVerticalOffset" class="text-xs font-semibold uppercase tracking-wider text-gray-300">
-                Headline Vertical Position
-              </label>
-              <span id="headline-offset-readout" class="text-xs font-mono text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-tds-border">
-                0px (Default Bottom)
-              </span>
-            </div>
-            <input
-              type="range"
-              id="headlineVerticalOffset"
-              min="-150"
-              max="50"
-              value="0"
-              class="w-full"
-            />
-          </div>
+          >METRO RAIL EXPANSION PHASE TWO NEARS COMPLETION AHEAD OF SCHEDULE IN DHAKA</textarea>
 
           <div class="mt-2 flex items-center justify-between text-xs text-gray-400">
             <span>Top-right badge: <strong id="badge-preview-label" class="text-tds-red font-sans font-bold tracking-wider">TDS EXCLUSIVE</strong></span>
-            <span id="headline-char-count">21 / 160 chars</span>
+            <span id="headline-char-count">73 / 160 chars</span>
           </div>
         </div>
 
-        <!-- Step 5: Export MP4 Engine & Progress Display -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex-1">
               <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">5</span>
+                <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">4</span>
                 <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
                   Client-Side MP4 Export (WebCodecs)
                 </h2>
@@ -555,7 +486,6 @@
     </div>
   </main>
 
-  <!-- Application Logic -->
   <script>
     (function () {
       'use strict';
@@ -571,7 +501,6 @@
       const codecStatusPill = document.getElementById('codec-status-pill');
 
       const hiddenVideo = document.getElementById('hidden-video');
-      const brandLogo = document.getElementById('tds-brand-logo');
       const canvas = document.getElementById('video-preview-canvas');
       const ctx = canvas.getContext('2d', { alpha: false });
 
@@ -590,13 +519,10 @@
       const videoOffsetYSlider = document.getElementById('videoOffsetY');
       const videoOffsetYReadout = document.getElementById('video-offset-y-readout');
 
-      const logoCornerInput = document.getElementById('logo-corner-input');
       const categoryInput = document.getElementById('category-input');
       const badgePreviewLabel = document.getElementById('badge-preview-label');
       const headlineInput = document.getElementById('main-headline-input');
       const headlineCharCount = document.getElementById('headline-char-count');
-      const headlineVerticalOffsetSlider = document.getElementById('headlineVerticalOffset');
-      const headlineOffsetReadout = document.getElementById('headline-offset-readout');
 
       const togglePlayBtn = document.getElementById('toggle-play-btn');
       const playBtnLabel = document.getElementById('play-btn-label');
@@ -685,4 +611,639 @@
 
         startTimeInput.value = startTime.toFixed(1);
         endTimeInput.value = endTime.toFixed(1);
-        startTimeSlider
+        startTimeSlider.value = startTime;
+        endTimeSlider.value = endTime;
+
+        selectedDurationBadge.textContent = `${finalDuration.toFixed(1)}s`;
+        trimValidationMsg.innerHTML = validationNote;
+
+        const leftPercent = (startTime / maxVideoTime) * 100;
+        const widthPercent = ((endTime - startTime) / maxVideoTime) * 100;
+        trimProgressBar.style.left = `${Math.max(0, Math.min(100, leftPercent))}%`;
+        trimProgressBar.style.width = `${Math.max(2, Math.min(100 - leftPercent, widthPercent))}%`;
+
+        if (hasLoadedVideo && !isExporting) {
+          if (hiddenVideo.currentTime < startTime || hiddenVideo.currentTime > endTime) {
+            hiddenVideo.currentTime = startTime;
+          }
+        }
+      }
+
+      startTimeInput.addEventListener('change', () => validateAndApplyTrim('start'));
+      endTimeInput.addEventListener('change', () => validateAndApplyTrim('end'));
+
+      startTimeSlider.addEventListener('input', () => {
+        startTimeInput.value = startTimeSlider.value;
+        validateAndApplyTrim('start');
+      });
+
+      endTimeSlider.addEventListener('input', () => {
+        endTimeInput.value = endTimeSlider.value;
+        validateAndApplyTrim('end');
+      });
+
+      headlineInput.addEventListener('input', () => {
+        headlineCharCount.textContent = `${headlineInput.value.length} / 160 chars`;
+      });
+
+      videoOffsetYSlider.addEventListener('input', () => {
+        const val = parseInt(videoOffsetYSlider.value, 10);
+        const posLabel = val === 50 ? 'Centered' : val < 50 ? 'Upper' : 'Lower';
+        videoOffsetYReadout.textContent = `${val}% (${posLabel})`;
+      });
+
+      categoryInput.addEventListener('change', () => {
+        const rawCategory = categoryInput.value || 'TDS Exclusive';
+        const sanitizedCategory = rawCategory.replace(/\s+desk$/i, '').trim().toUpperCase();
+        badgePreviewLabel.textContent = sanitizedCategory;
+      });
+
+      function loadVideoFile(file) {
+        if (!file || !file.type.startsWith('video/')) {
+          showStatusBanner('Please select a valid video file (MP4, WebM, MOV).', true);
+          return;
+        }
+
+        if (currentVideoObjectUrl) {
+          URL.revokeObjectURL(currentVideoObjectUrl);
+        }
+
+        currentVideoObjectUrl = URL.createObjectURL(file);
+        uploadedFilename.textContent = `Loaded: ${file.name}`;
+        uploadedFilename.className = 'text-xs text-emerald-400 font-medium mt-1';
+
+        hiddenVideo.src = currentVideoObjectUrl;
+        hiddenVideo.muted = true;
+        hiddenVideo.playsInline = true;
+        hiddenVideo.loop = true;
+        hiddenVideo.load();
+      }
+
+      hiddenVideo.addEventListener('loadedmetadata', () => {
+        hasLoadedVideo = true;
+        const rawDuration = hiddenVideo.duration;
+        sourceVideoDuration = Number.isFinite(rawDuration) && rawDuration > 0 ? rawDuration : 30.0;
+
+        videoMetaBadge.textContent = `${hiddenVideo.videoWidth}×${hiddenVideo.videoHeight} • ${sourceVideoDuration.toFixed(1)}s`;
+        totalTimeReadout.textContent = `${sourceVideoDuration.toFixed(1)}s`;
+
+        const maxBound = Math.max(MIN_CLIP_DURATION, Math.round(sourceVideoDuration * 10) / 10);
+        startTimeInput.max = Math.max(0, maxBound - MIN_CLIP_DURATION).toFixed(1);
+        startTimeSlider.max = Math.max(0, maxBound - MIN_CLIP_DURATION).toFixed(1);
+        endTimeInput.max = maxBound.toFixed(1);
+        endTimeSlider.max = maxBound.toFixed(1);
+
+        startTimeInput.value = '0.0';
+        const defaultEnd = Math.min(MAX_CLIP_DURATION, Math.max(MIN_CLIP_DURATION, Math.min(15.0, maxBound)));
+        endTimeInput.value = defaultEnd.toFixed(1);
+
+        if (sourceVideoDuration < MIN_CLIP_DURATION) {
+          trimValidationMsg.innerHTML =
+            '<span class="text-amber-400 font-medium">Note: Uploaded video is shorter than 5.0s; trimmer clamped to video length.</span>';
+        }
+
+        validateAndApplyTrim('end');
+
+        togglePlayBtn.disabled = false;
+        restartLoopBtn.disabled = false;
+        hiddenVideo.currentTime = startTime;
+        hiddenVideo.play().catch(() => {
+          playBtnLabel.textContent = 'Play';
+        });
+      });
+
+      videoUploadInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          loadVideoFile(e.target.files[0]);
+        }
+      });
+
+      uploadDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadDropzone.classList.add('border-tds-red', 'bg-tds-red/10');
+      });
+
+      uploadDropzone.addEventListener('dragleave', () => {
+        uploadDropzone.classList.remove('border-tds-red', 'bg-tds-red/10');
+      });
+
+      uploadDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadDropzone.classList.remove('border-tds-red', 'bg-tds-red/10');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          loadVideoFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      togglePlayBtn.addEventListener('click', () => {
+        if (!hasLoadedVideo || isExporting) return;
+        if (hiddenVideo.paused) {
+          hiddenVideo.play();
+          playBtnLabel.textContent = 'Pause';
+        } else {
+          hiddenVideo.pause();
+          playBtnLabel.textContent = 'Play';
+        }
+      });
+
+      restartLoopBtn.addEventListener('click', () => {
+        if (!hasLoadedVideo || isExporting) return;
+        hiddenVideo.currentTime = startTime;
+        hiddenVideo.play();
+        playBtnLabel.textContent = 'Pause';
+      });
+
+      function getWrappedLines(context, text, maxWidth) {
+        const words = text.trim().split(/\s+/);
+        const lines = [];
+        let currentLine = '';
+
+        for (let i = 0; i < words.length; i++) {
+          const word = words[i];
+          const testLine = currentLine ? `${currentLine} ${word}` : word;
+          const metrics = context.measureText(testLine);
+          if (metrics.width > maxWidth && currentLine !== '') {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        }
+        if (currentLine) {
+          lines.push(currentLine);
+        }
+        return lines;
+      }
+
+      function renderVideocardFrame() {
+        const cw = canvas.width;
+        const ch = canvas.height;
+
+        ctx.fillStyle = '#0b0c10';
+        ctx.fillRect(0, 0, cw, ch);
+
+        if (hasLoadedVideo && hiddenVideo.readyState >= 2 && hiddenVideo.videoWidth > 0 && hiddenVideo.videoHeight > 0) {
+          const video = hiddenVideo;
+          const canvasAspect = canvas.width / canvas.height;
+          const videoAspect = video.videoWidth / video.videoHeight;
+          let sWidth, sHeight;
+          if (videoAspect > canvasAspect) {
+            sHeight = video.videoHeight;
+            sWidth = sHeight * canvasAspect;
+          } else {
+            sWidth = video.videoWidth;
+            sHeight = sWidth / canvasAspect;
+          }
+          const maxPanY = Math.max(0, video.videoHeight - sHeight);
+          const maxPanX = Math.max(0, video.videoWidth - sWidth);
+          const sy = maxPanY * (document.getElementById('videoOffsetY').value / 100);
+          const sx = maxPanX / 2;
+
+          ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+        } else {
+          const bgGrad = ctx.createLinearGradient(0, 0, cw, ch);
+          bgGrad.addColorStop(0, '#141720');
+          bgGrad.addColorStop(0.5, '#1d1216');
+          bgGrad.addColorStop(1, '#0b0c10');
+          ctx.fillStyle = bgGrad;
+          ctx.fillRect(0, 0, cw, ch);
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+          ctx.lineWidth = 1;
+          for (let x = 0; x < cw; x += 60) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, ch);
+            ctx.stroke();
+          }
+          for (let y = 0; y < ch; y += 60) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(cw, y);
+            ctx.stroke();
+          }
+
+          ctx.save();
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.font = '600 22px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('UPLOAD VIDEO FOOTAGE TO PREVIEW', cw / 2, ch / 2 - 20);
+          ctx.font = '400 16px Inter, sans-serif';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
+          ctx.fillText('720 × 900 (4:5 Center Cover Crop)', cw / 2, ch / 2 + 12);
+          ctx.restore();
+        }
+
+        const topGrad = ctx.createLinearGradient(0, 0, 0, 160);
+        topGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+        topGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(0, 0, cw, 160);
+
+        const bottomGrad = ctx.createLinearGradient(0, ch - 420, 0, ch);
+        bottomGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        bottomGrad.addColorStop(0.35, 'rgba(8, 9, 12, 0.72)');
+        bottomGrad.addColorStop(1, 'rgba(5, 6, 8, 0.96)');
+        ctx.fillStyle = bottomGrad;
+        ctx.fillRect(0, ch - 420, cw, 420);
+
+        ctx.save();
+        const rawCategory = document.getElementById('category-input')
+          ? document.getElementById('category-input').value
+          : 'TDS Exclusive';
+        const badgeText = rawCategory.replace(/\s+desk$/i, '').trim().toUpperCase();
+
+        ctx.font = '700 18px "Inter", sans-serif';
+        const textMetrics = ctx.measureText(badgeText);
+        const badgePaddingX = 22;
+        const badgeHeight = 42;
+        const badgeWidth = textMetrics.width + badgePaddingX * 2;
+        const badgeX = cw - badgeWidth - 36;
+        const badgeY = 36;
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+
+        ctx.fillStyle = '#a31f24';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 6);
+        } else {
+          ctx.rect(badgeX, badgeY, badgeWidth, badgeHeight);
+        }
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(badgeText, badgeX + badgeWidth / 2, badgeY + badgeHeight / 2 + 1);
+        ctx.restore();
+
+        ctx.save();
+        const rawHeadline = (headlineInput.value || 'THE DHAKA STANDARD BREAKING REPORT').toUpperCase();
+        const marginX = 42;
+        const maxTextWidth = cw - marginX * 2;
+        const fontSize = 42;
+        const lineHeight = 50;
+
+        ctx.font = `700 ${fontSize}px "Oswald", sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+
+        const lines = getWrappedLines(ctx, rawHeadline, maxTextWidth).slice(0, 5);
+        const bottomFooterY = ch - 42;
+        let startTextY = bottomFooterY - 38 - (lines.length - 1) * lineHeight;
+
+        ctx.fillStyle = '#a31f24';
+        ctx.fillRect(marginX, startTextY - fontSize - 18, 76, 6);
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+        ctx.fillStyle = '#ffffff';
+
+        for (let i = 0; i < lines.length; i++) {
+          ctx.fillText(lines[i], marginX, startTextY + i * lineHeight);
+        }
+
+        ctx.shadowColor = 'transparent';
+        ctx.font = '600 16px "Oswald", sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillText('THE DHAKA STANDARD  •  DHAKASTANDARD.COM', marginX, bottomFooterY);
+
+        ctx.fillStyle = '#a31f24';
+        ctx.fillRect(0, ch - 8, cw, 8);
+        ctx.restore();
+      }
+
+      function previewLoop() {
+        if (!isExporting) {
+          if (hasLoadedVideo) {
+            if (hiddenVideo.currentTime >= endTime || hiddenVideo.currentTime < startTime - 0.15) {
+              hiddenVideo.currentTime = startTime;
+            }
+            currentTimeReadout.textContent = `${hiddenVideo.currentTime.toFixed(1)}s`;
+          }
+          renderVideocardFrame();
+        }
+        requestAnimationFrame(previewLoop);
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          requestAnimationFrame(previewLoop);
+        });
+      } else {
+        window.addEventListener('load', () => {
+          requestAnimationFrame(previewLoop);
+        });
+      }
+
+      function showStatusBanner(message, isError = false, downloadUrl = null) {
+        exportStatusBox.classList.remove('hidden');
+        exportStatusMessage.textContent = message;
+        exportStatusMessage.className = isError ? 'text-red-400 font-medium' : 'text-emerald-300 font-medium';
+
+        if (downloadUrl) {
+          manualDownloadLink.href = downloadUrl;
+          manualDownloadLink.classList.remove('hidden');
+        } else {
+          manualDownloadLink.classList.add('hidden');
+        }
+      }
+
+      function seekVideoToTime(videoEl, targetTime) {
+        return new Promise((resolve) => {
+          const clampedTarget = Math.max(0, Math.min(targetTime, videoEl.duration || targetTime));
+
+          if (Math.abs(videoEl.currentTime - clampedTarget) < 0.001 && !videoEl.seeking) {
+            resolve();
+            return;
+          }
+
+          let settled = false;
+          const onSeekedHandler = () => {
+            if (settled) return;
+            settled = true;
+            videoEl.removeEventListener('seeked', onSeekedHandler);
+            resolve();
+          };
+
+          const fallbackTimer = setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            videoEl.removeEventListener('seeked', onSeekedHandler);
+            resolve();
+          }, 600);
+
+          videoEl.addEventListener('seeked', () => {
+            clearTimeout(fallbackTimer);
+            onSeekedHandler();
+          }, { once: true });
+
+          videoEl.currentTime = clampedTarget;
+        });
+      }
+
+      async function exportVideocardMp4() {
+        if (!checkWebCodecsSupport()) return;
+
+        if (!hasLoadedVideo) {
+          showStatusBanner('Please upload a source video file first before exporting.', true);
+          return;
+        }
+
+        if (typeof Mp4Muxer === 'undefined') {
+          showStatusBanner('Error: mp4-muxer library failed to load from CDN.', true);
+          return;
+        }
+
+        validateAndApplyTrim('end');
+        const exportStart = startTime;
+        let exportEnd = endTime;
+        const clipDuration = exportEnd - exportStart;
+
+        if (clipDuration < MIN_CLIP_DURATION - 0.1 && sourceVideoDuration >= MIN_CLIP_DURATION) {
+          exportEnd = Math.min(sourceVideoDuration, exportStart + MIN_CLIP_DURATION);
+        } else if (clipDuration > MAX_CLIP_DURATION + 0.1) {
+          exportEnd = exportStart + MAX_CLIP_DURATION;
+        }
+
+        isExporting = true;
+        hiddenVideo.pause();
+        playBtnLabel.textContent = 'Play';
+        exportMp4Btn.disabled = true;
+        togglePlayBtn.disabled = true;
+        restartLoopBtn.disabled = true;
+        startTimeInput.disabled = true;
+        endTimeInput.disabled = true;
+        startTimeSlider.disabled = true;
+        endTimeSlider.disabled = true;
+        exportStatusBox.classList.add('hidden');
+
+        canvas.width = EXPORT_WIDTH;
+        canvas.height = EXPORT_HEIGHT;
+
+        try {
+          exportProgressText.textContent = 'Rendering: 0% (Extracting and decoding audio track...)';
+          exportProgressBar.style.width = '0%';
+
+          let audioBuffer = null;
+          try {
+            const response = await fetch(currentVideoObjectUrl);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+            if (audioCtx.state !== 'closed' && typeof audioCtx.close === 'function') {
+              await audioCtx.close();
+            }
+          } catch (audioErr) {
+            console.warn('Audio decoding failed or no audio track found. Proceeding with silent video export.', audioErr);
+          }
+
+          const hasAudioSupport = Boolean(
+            audioBuffer &&
+            typeof window.AudioEncoder !== 'undefined' &&
+            typeof window.AudioData !== 'undefined'
+          );
+
+          const muxerConfig = {
+            target: new Mp4Muxer.ArrayBufferTarget(),
+            video: {
+              codec: 'avc',
+              width: EXPORT_WIDTH,
+              height: EXPORT_HEIGHT
+            },
+            audio: {
+              codec: 'aac',
+              sampleRate: 44100,
+              numberOfChannels: 2
+            },
+            fastStart: 'in-memory'
+          };
+
+          if (hasAudioSupport) {
+            muxerConfig.audio.sampleRate = audioBuffer.sampleRate;
+            muxerConfig.audio.numberOfChannels = audioBuffer.numberOfChannels;
+          } else {
+            delete muxerConfig.audio;
+          }
+
+          const muxer = new Mp4Muxer.Muxer(muxerConfig);
+
+          let audioEncoder = null;
+          if (hasAudioSupport) {
+            audioEncoder = new AudioEncoder({
+              output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
+              error: (err) => console.error('AudioEncoder error:', err)
+            });
+
+            audioEncoder.configure({
+              codec: 'mp4a.40.2',
+              sampleRate: audioBuffer.sampleRate,
+              numberOfChannels: audioBuffer.numberOfChannels,
+              bitrate: 128000
+            });
+
+            exportProgressText.textContent = 'Rendering: 0% (Encoding trimmed AAC audio track...)';
+
+            const sampleRate = audioBuffer.sampleRate;
+            const numberOfChannels = audioBuffer.numberOfChannels;
+            const startSample = Math.floor(exportStart * sampleRate);
+            const endSample = Math.min(audioBuffer.length, Math.floor(exportEnd * sampleRate));
+            const totalSamples = Math.max(0, endSample - startSample);
+            const chunkSize = sampleRate;
+
+            for (let offset = 0; offset < totalSamples; offset += chunkSize) {
+              const chunkStart = startSample + offset;
+              const chunkEnd = Math.min(endSample, chunkStart + chunkSize);
+              const numberOfFrames = chunkEnd - chunkStart;
+
+              if (numberOfFrames <= 0) break;
+
+              const planarBuffer = new Float32Array(numberOfFrames * numberOfChannels);
+              for (let c = 0; c < numberOfChannels; c++) {
+                const channelData = audioBuffer.getChannelData(c).subarray(chunkStart, chunkEnd);
+                planarBuffer.set(channelData, c * numberOfFrames);
+              }
+
+              const audioData = new AudioData({
+                format: 'f32-planar',
+                sampleRate: sampleRate,
+                numberOfFrames: numberOfFrames,
+                numberOfChannels: numberOfChannels,
+                timestamp: (offset / audioBuffer.sampleRate) * 1000000,
+                data: planarBuffer
+              });
+
+              audioEncoder.encode(audioData);
+              audioData.close();
+            }
+
+            await audioEncoder.flush();
+            audioEncoder.close();
+          }
+
+          exportProgressText.textContent = 'Rendering: 0% (Initializing H.264 hardware encoder...)';
+
+          let encoderError = null;
+          const encoder = new VideoEncoder({
+            output: (chunk, meta) => {
+              muxer.addVideoChunk(chunk, meta);
+            },
+            error: (err) => {
+              console.error('VideoEncoder error:', err);
+              encoderError = err;
+            }
+          });
+
+          encoder.configure({
+            codec: 'avc1.42001f',
+            width: EXPORT_WIDTH,
+            height: EXPORT_HEIGHT,
+            bitrate: 5000000,
+            framerate: EXPORT_FPS
+          });
+
+          const stepSec = 1 / EXPORT_FPS;
+          const totalFrames = Math.max(1, Math.round((exportEnd - exportStart) * EXPORT_FPS));
+          let currentTime = exportStart;
+          let frameIndex = 0;
+
+          while (currentTime <= exportEnd && frameIndex < totalFrames) {
+            if (encoderError) {
+              throw encoderError;
+            }
+
+            await seekVideoToTime(hiddenVideo, currentTime);
+            renderVideocardFrame();
+
+            const videoFrame = new VideoFrame(canvas, {
+              timestamp: frameIndex * FRAME_DURATION_US
+            });
+
+            const isKeyFrame = frameIndex % 60 === 0;
+            encoder.encode(videoFrame, { keyFrame: isKeyFrame });
+            videoFrame.close();
+
+            if (encoder.encodeQueueSize > 12) {
+              await encoder.flush();
+            }
+
+            frameIndex++;
+            currentTime += stepSec;
+
+            const percent = Math.min(99, Math.round((frameIndex / totalFrames) * 100));
+            exportProgressText.textContent = `Rendering: ${percent}% (${frameIndex} / ${totalFrames} frames)`;
+            exportProgressBar.style.width = `${percent}%`;
+            currentTimeReadout.textContent = `${Math.min(exportEnd, currentTime).toFixed(1)}s`;
+          }
+
+          exportProgressText.textContent = 'Rendering: 100% (Flushing & finalizing MP4 container...)';
+          exportProgressBar.style.width = '100%';
+
+          await encoder.flush();
+          encoder.close();
+          muxer.finalize();
+
+          const mp4Buffer = muxer.target.buffer;
+          const mp4Blob = new Blob([mp4Buffer], { type: 'video/mp4' });
+
+          if (currentExportBlobUrl) {
+            URL.revokeObjectURL(currentExportBlobUrl);
+          }
+          currentExportBlobUrl = URL.createObjectURL(mp4Blob);
+
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.style.display = 'none';
+          downloadAnchor.href = currentExportBlobUrl;
+          downloadAnchor.download = 'tds-videocard.mp4';
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          document.body.removeChild(downloadAnchor);
+
+          const sizeMb = (mp4Blob.size / (1024 * 1024)).toFixed(2);
+          exportProgressText.textContent = `Rendering: 100% — Export complete (${sizeMb} MB)`;
+          showStatusBanner(
+            `Success! tds-videocard.mp4 (${sizeMb} MB, ${frameIndex} frames) has been generated.`,
+            false,
+            currentExportBlobUrl
+          );
+        } catch (err) {
+          console.error('MP4 Export failed:', err);
+          exportProgressText.textContent = 'Rendering halted due to encoder error.';
+          showStatusBanner(`Export failed: ${err.message || 'Unknown WebCodecs error'}`, true);
+        } finally {
+          isExporting = false;
+          exportMp4Btn.disabled = false;
+          togglePlayBtn.disabled = !hasLoadedVideo;
+          restartLoopBtn.disabled = !hasLoadedVideo;
+          startTimeInput.disabled = false;
+          endTimeInput.disabled = false;
+          startTimeSlider.disabled = false;
+          endTimeSlider.disabled = false;
+
+          if (hasLoadedVideo) {
+            hiddenVideo.currentTime = startTime;
+            hiddenVideo.play().catch(() => {});
+            playBtnLabel.textContent = 'Pause';
+          }
+        }
+      }
+
+      exportMp4Btn.addEventListener('click', exportVideocardMp4);
+    })();
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>

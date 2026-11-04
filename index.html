@@ -9,7 +9,8 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#a31f24" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" href="TDS Logo no background.png" />
+  <link rel="icon" type="image/png" href="TDS%20Logo%20no%20background.png" />
+  <link rel="apple-touch-icon" href="TDS%20Logo%20no%20background.png" />
 
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -106,21 +107,34 @@
       top: -9999px;
       visibility: hidden;
     }
+
+    /* CRITICAL MOBILE FIX: Do not use display:none on video or Android hardware decoder sleeps */
+    #hidden-video {
+      position: fixed;
+      top: -10px;
+      left: -10px;
+      width: 1px;
+      height: 1px;
+      opacity: 0.001;
+      pointer-events: none;
+      z-index: -10;
+    }
   </style>
 </head>
 
 <body class="min-h-screen bg-tds-dark text-gray-100 flex flex-col selection:bg-tds-red selection:text-white">
   <span class="font-preload" aria-hidden="true">TDS EXCLUSIVE HEADLINE</span>
 
+  <!-- Off-screen Video Element for reliable Android hardware decoding & seeking -->
   <video
     id="hidden-video"
-    class="hidden"
     muted
     playsinline
-    loop
-    crossorigin="anonymous"
+    webkit-playsinline
+    preload="auto"
   ></video>
 
+  <!-- WebCodecs Unsupported Error Banner -->
   <div
     id="webcodecs-error-banner"
     class="hidden bg-red-950/95 border-b-2 border-tds-red text-red-100 px-4 py-3.5 shadow-lg z-50"
@@ -143,11 +157,19 @@
     </div>
   </div>
 
+  <!-- Top Navigation Header -->
   <header class="border-b border-tds-border bg-tds-panel/90 backdrop-blur sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow-md shadow-tds-red/20 shrink-0">
-  <img src="TDS Logo no background.png" alt="The Dhaka Standard Logo" class="h-full w-auto object-contain" />
-      </div>
+      <div class="flex items-center gap-3">
+        <div class="h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow-md shadow-tds-red/20 shrink-0">
+          <!-- We use this visible logo directly for the canvas watermark too! -->
+          <img
+            id="header-brand-logo"
+            src="TDS%20Logo%20no%20background.png"
+            alt="The Dhaka Standard Logo"
+            class="h-full w-auto object-contain"
+          />
+        </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-oswald font-bold text-base sm:text-lg tracking-wide uppercase text-white leading-none">
@@ -172,9 +194,11 @@
     </div>
   </header>
 
+  <!-- Main Mobile-First Studio Frame -->
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5 sm:py-8">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
+      <!-- Left / Top Column: 4:5 Live Canvas Preview -->
       <section class="lg:col-span-5 flex flex-col items-center">
         <div class="w-full max-w-[380px] bg-tds-panel border border-tds-border rounded-2xl p-3 sm:p-4 shadow-2xl">
           <div class="flex items-center justify-between mb-2.5 px-1">
@@ -227,8 +251,10 @@
         </div>
       </section>
 
+      <!-- Right / Bottom Column: Controls, Trimmer, Headline & Export -->
       <section class="lg:col-span-7 flex flex-col gap-5">
 
+        <!-- Step 1: Video Upload Dropzone -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
@@ -267,6 +293,7 @@
           </label>
         </div>
 
+        <!-- Step 2: 5-30s Video Trimmer Section -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div class="flex items-center gap-2">
@@ -380,10 +407,35 @@
           </div>
         </div>
 
+        <!-- Step 3: Logo Placement & Framing Controls -->
+        <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
+            <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
+              Logo Placement Corner
+            </h2>
+          </div>
+          <div>
+            <label for="logo-corner-input" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+              Select Logo Position on Canvas
+            </label>
+            <select
+              id="logo-corner-input"
+              class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none px-3.5 py-2.5 text-sm text-white cursor-pointer"
+            >
+              <option value="top-left" selected>Top-Left Corner</option>
+              <option value="top-right">Top-Right Corner</option>
+              <option value="bottom-left">Bottom-Left Corner</option>
+              <option value="bottom-right">Bottom-Right Corner</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 4: Category Desk & Main Headline Textarea -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
+              <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">4</span>
               <label for="main-headline-input" class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
                 Desk Category &amp; Main Headline
               </label>
@@ -427,19 +479,40 @@
             maxlength="160"
             placeholder="Enter breaking news headline for the videocard..."
             class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none p-3.5 text-sm sm:text-base text-white placeholder-gray-500 resize-none leading-relaxed"
-          >METRO RAIL EXPANSION PHASE TWO NEARS COMPLETION AHEAD OF SCHEDULE IN DHAKA</textarea>
+          >CUTE FEMALE TIGRESSES</textarea>
+
+          <!-- Headline Vertical Position Slider -->
+          <div class="mt-4 pt-4 border-t border-tds-border">
+            <div class="flex items-center justify-between mb-2">
+              <label for="headlineVerticalOffset" class="text-xs font-semibold uppercase tracking-wider text-gray-300">
+                Headline Vertical Position
+              </label>
+              <span id="headline-offset-readout" class="text-xs font-mono text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-tds-border">
+                0px (Default Bottom)
+              </span>
+            </div>
+            <input
+              type="range"
+              id="headlineVerticalOffset"
+              min="-150"
+              max="50"
+              value="0"
+              class="w-full"
+            />
+          </div>
 
           <div class="mt-2 flex items-center justify-between text-xs text-gray-400">
-            <span>Top-right badge: <strong id="badge-preview-label" class="text-tds-red font-sans font-bold tracking-wider">TDS EXCLUSIVE</strong></span>
-            <span id="headline-char-count">73 / 160 chars</span>
+            <span>Badge: <strong id="badge-preview-label" class="text-tds-red font-sans font-bold tracking-wider">TDS EXCLUSIVE</strong></span>
+            <span id="headline-char-count">21 / 160 chars</span>
           </div>
         </div>
 
+        <!-- Step 5: Export MP4 Engine & Progress Display -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex-1">
               <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">4</span>
+                <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">5</span>
                 <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
                   Client-Side MP4 Export (WebCodecs)
                 </h2>
@@ -486,6 +559,7 @@
     </div>
   </main>
 
+  <!-- Application Logic -->
   <script>
     (function () {
       'use strict';
@@ -501,8 +575,13 @@
       const codecStatusPill = document.getElementById('codec-status-pill');
 
       const hiddenVideo = document.getElementById('hidden-video');
+      const headerLogo = document.getElementById('header-brand-logo');
       const canvas = document.getElementById('video-preview-canvas');
       const ctx = canvas.getContext('2d', { alpha: false });
+
+      // Preload dedicated JS Image object for Canvas watermark
+      const canvasLogoImg = new Image();
+      canvasLogoImg.src = 'TDS%20Logo%20no%20background.png';
 
       const uploadDropzone = document.getElementById('upload-dropzone');
       const videoUploadInput = document.getElementById('video-upload-input');
@@ -519,10 +598,13 @@
       const videoOffsetYSlider = document.getElementById('videoOffsetY');
       const videoOffsetYReadout = document.getElementById('video-offset-y-readout');
 
+      const logoCornerInput = document.getElementById('logo-corner-input');
       const categoryInput = document.getElementById('category-input');
       const badgePreviewLabel = document.getElementById('badge-preview-label');
       const headlineInput = document.getElementById('main-headline-input');
       const headlineCharCount = document.getElementById('headline-char-count');
+      const headlineVerticalOffsetSlider = document.getElementById('headlineVerticalOffset');
+      const headlineOffsetReadout = document.getElementById('headline-offset-readout');
 
       const togglePlayBtn = document.getElementById('toggle-play-btn');
       const playBtnLabel = document.getElementById('play-btn-label');
@@ -652,12 +734,20 @@
         videoOffsetYReadout.textContent = `${val}% (${posLabel})`;
       });
 
+      headlineVerticalOffsetSlider.addEventListener('input', () => {
+        const val = parseInt(headlineVerticalOffsetSlider.value, 10);
+        headlineOffsetReadout.textContent = `${val}px`;
+      });
+
       categoryInput.addEventListener('change', () => {
         const rawCategory = categoryInput.value || 'TDS Exclusive';
         const sanitizedCategory = rawCategory.replace(/\s+desk$/i, '').trim().toUpperCase();
         badgePreviewLabel.textContent = sanitizedCategory;
       });
 
+      // =========================================================================
+      // Reliable Mobile Video Loading & Frame Decoding
+      // =========================================================================
       function loadVideoFile(file) {
         if (!file || !file.type.startsWith('video/')) {
           showStatusBanner('Please select a valid video file (MP4, WebM, MOV).', true);
@@ -668,14 +758,15 @@
           URL.revokeObjectURL(currentVideoObjectUrl);
         }
 
+        hasLoadedVideo = false;
         currentVideoObjectUrl = URL.createObjectURL(file);
         uploadedFilename.textContent = `Loaded: ${file.name}`;
         uploadedFilename.className = 'text-xs text-emerald-400 font-medium mt-1';
 
         hiddenVideo.src = currentVideoObjectUrl;
         hiddenVideo.muted = true;
+        hiddenVideo.defaultMuted = true;
         hiddenVideo.playsInline = true;
-        hiddenVideo.loop = true;
         hiddenVideo.load();
       }
 
@@ -706,10 +797,21 @@
 
         togglePlayBtn.disabled = false;
         restartLoopBtn.disabled = false;
-        hiddenVideo.currentTime = startTime;
-        hiddenVideo.play().catch(() => {
+
+        // Force initial frame seek & play so mobile browsers decode immediately
+        hiddenVideo.currentTime = startTime || 0.01;
+        hiddenVideo.play().then(() => {
+          playBtnLabel.textContent = 'Pause';
+        }).catch(() => {
           playBtnLabel.textContent = 'Play';
         });
+      });
+
+      // Redraw immediately when mobile browser finishes decoding a frame
+      hiddenVideo.addEventListener('loadeddata', renderVideocardFrame);
+      hiddenVideo.addEventListener('canplay', renderVideocardFrame);
+      hiddenVideo.addEventListener('seeked', () => {
+        if (!isExporting) renderVideocardFrame();
       });
 
       videoUploadInput.addEventListener('change', (e) => {
@@ -775,6 +877,9 @@
         return lines;
       }
 
+      // =========================================================================
+      // Canvas Renderer: Video + Dynamic Logo + Desk Badge + Headline
+      // =========================================================================
       function renderVideocardFrame() {
         const cw = canvas.width;
         const ch = canvas.height;
@@ -782,25 +887,34 @@
         ctx.fillStyle = '#0b0c10';
         ctx.fillRect(0, 0, cw, ch);
 
-        if (hasLoadedVideo && hiddenVideo.readyState >= 2 && hiddenVideo.videoWidth > 0 && hiddenVideo.videoHeight > 0) {
-          const video = hiddenVideo;
-          const canvasAspect = canvas.width / canvas.height;
-          const videoAspect = video.videoWidth / video.videoHeight;
-          let sWidth, sHeight;
-          if (videoAspect > canvasAspect) {
-            sHeight = video.videoHeight;
-            sWidth = sHeight * canvasAspect;
-          } else {
-            sWidth = video.videoWidth;
-            sHeight = sWidth / canvasAspect;
-          }
-          const maxPanY = Math.max(0, video.videoHeight - sHeight);
-          const maxPanX = Math.max(0, video.videoWidth - sWidth);
-          const sy = maxPanY * (document.getElementById('videoOffsetY').value / 100);
-          const sx = maxPanX / 2;
+        let drewVideoFrame = false;
 
-          ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-        } else {
+        if (hasLoadedVideo && hiddenVideo.videoWidth > 0 && hiddenVideo.videoHeight > 0) {
+          try {
+            const video = hiddenVideo;
+            const canvasAspect = cw / ch;
+            const videoAspect = video.videoWidth / video.videoHeight;
+            let sWidth, sHeight;
+            if (videoAspect > canvasAspect) {
+              sHeight = video.videoHeight;
+              sWidth = sHeight * canvasAspect;
+            } else {
+              sWidth = video.videoWidth;
+              sHeight = sWidth / canvasAspect;
+            }
+            const maxPanY = Math.max(0, video.videoHeight - sHeight);
+            const maxPanX = Math.max(0, video.videoWidth - sWidth);
+            const sy = maxPanY * (document.getElementById('videoOffsetY').value / 100);
+            const sx = maxPanX / 2;
+
+            ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, cw, ch);
+            drewVideoFrame = true;
+          } catch (drawErr) {
+            drewVideoFrame = false;
+          }
+        }
+
+        if (!drewVideoFrame) {
           const bgGrad = ctx.createLinearGradient(0, 0, cw, ch);
           bgGrad.addColorStop(0, '#141720');
           bgGrad.addColorStop(0.5, '#1d1216');
@@ -834,6 +948,7 @@
           ctx.restore();
         }
 
+        // Top & Bottom Cinematic Legibility Gradients
         const topGrad = ctx.createLinearGradient(0, 0, 0, 160);
         topGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
         topGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -847,10 +962,13 @@
         ctx.fillStyle = bottomGrad;
         ctx.fillRect(0, ch - 420, cw, 420);
 
+        // ---------------------------------------------------------------------
+        // 1. Dynamic Category Badge (Automatically swaps sides if logo is top-right)
+        // ---------------------------------------------------------------------
+        const corner = logoCornerInput ? logoCornerInput.value : 'top-left';
+
         ctx.save();
-        const rawCategory = document.getElementById('category-input')
-          ? document.getElementById('category-input').value
-          : 'TDS Exclusive';
+        const rawCategory = categoryInput ? categoryInput.value : 'TDS Exclusive';
         const badgeText = rawCategory.replace(/\s+desk$/i, '').trim().toUpperCase();
 
         ctx.font = '700 18px "Inter", sans-serif';
@@ -858,7 +976,7 @@
         const badgePaddingX = 22;
         const badgeHeight = 42;
         const badgeWidth = textMetrics.width + badgePaddingX * 2;
-        const badgeX = cw - badgeWidth - 36;
+        const badgeX = corner === 'top-right' ? 36 : cw - badgeWidth - 36;
         const badgeY = 36;
 
         ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
@@ -881,6 +999,57 @@
         ctx.fillText(badgeText, badgeX + badgeWidth / 2, badgeY + badgeHeight / 2 + 1);
         ctx.restore();
 
+        // ---------------------------------------------------------------------
+        // 2. Official TDS Brand Logo Watermark (Uses visible header logo or preloaded Image)
+        // ---------------------------------------------------------------------
+        ctx.save();
+        const activeLogo =
+          (canvasLogoImg.complete && canvasLogoImg.naturalWidth > 0)
+            ? canvasLogoImg
+            : (headerLogo && headerLogo.complete && headerLogo.naturalWidth > 0 ? headerLogo : null);
+
+        if (activeLogo) {
+          const targetLogoHeight = 54;
+          const targetLogoWidth = (activeLogo.naturalWidth / activeLogo.naturalHeight) * targetLogoHeight;
+          const padX = 12;
+          const padY = 6;
+          const totalBoxW = targetLogoWidth + padX * 2;
+          const totalBoxH = targetLogoHeight + padY * 2;
+
+          let logoBoxX = 36;
+          let logoBoxY = 30;
+
+          if (corner === 'top-right') {
+            logoBoxX = cw - totalBoxW - 36;
+            logoBoxY = 30;
+          } else if (corner === 'bottom-left') {
+            logoBoxX = 36;
+            logoBoxY = ch - totalBoxH - 80;
+          } else if (corner === 'bottom-right') {
+            logoBoxX = cw - totalBoxW - 36;
+            logoBoxY = ch - totalBoxH - 80;
+          }
+
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 3;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.beginPath();
+          if (ctx.roundRect) {
+            ctx.roundRect(logoBoxX, logoBoxY, totalBoxW, totalBoxH, 8);
+          } else {
+            ctx.rect(logoBoxX, logoBoxY, totalBoxW, totalBoxH);
+          }
+          ctx.fill();
+
+          ctx.shadowColor = 'transparent';
+          ctx.drawImage(activeLogo, logoBoxX + padX, logoBoxY + padY, targetLogoWidth, targetLogoHeight);
+        }
+        ctx.restore();
+
+        // ---------------------------------------------------------------------
+        // 3. Bottom Main Headline in White Oswald Font + Vertical Offset Slider
+        // ---------------------------------------------------------------------
         ctx.save();
         const rawHeadline = (headlineInput.value || 'THE DHAKA STANDARD BREAKING REPORT').toUpperCase();
         const marginX = 42;
@@ -893,8 +1062,9 @@
         ctx.textBaseline = 'alphabetic';
 
         const lines = getWrappedLines(ctx, rawHeadline, maxTextWidth).slice(0, 5);
+        const verticalShift = parseInt(headlineVerticalOffsetSlider ? headlineVerticalOffsetSlider.value : 0, 10);
         const bottomFooterY = ch - 42;
-        let startTextY = bottomFooterY - 38 - (lines.length - 1) * lineHeight;
+        const startTextY = (bottomFooterY - 38 - (lines.length - 1) * lineHeight) + verticalShift;
 
         ctx.fillStyle = '#a31f24';
         ctx.fillRect(marginX, startTextY - fontSize - 18, 76, 6);
@@ -923,6 +1093,9 @@
           if (hasLoadedVideo) {
             if (hiddenVideo.currentTime >= endTime || hiddenVideo.currentTime < startTime - 0.15) {
               hiddenVideo.currentTime = startTime;
+              if (!hiddenVideo.paused) {
+                hiddenVideo.play().catch(() => {});
+              }
             }
             currentTimeReadout.textContent = `${hiddenVideo.currentTime.toFixed(1)}s`;
           }

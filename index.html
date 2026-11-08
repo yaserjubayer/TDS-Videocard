@@ -43,8 +43,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- mp4-muxer Library via CDN -->
-  <script src="https://unpkg.com/mp4-muxer/build/mp4-muxer.js"></script>
+  <!-- mp4-muxer Library via CDN (Pinned to 5.1.3 for stable colorSpace handling) -->
+  <script src="https://unpkg.com/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
 
   <style>
     body {
@@ -108,13 +108,13 @@
       visibility: hidden;
     }
 
-    /* CRITICAL MOBILE FIX: Do not use display:none on video or Android hardware decoder sleeps */
+    /* Keep video element active in DOM so mobile & desktop hardware decoders never sleep */
     #hidden-video {
       position: fixed;
       top: -10px;
       left: -10px;
-      width: 1px;
-      height: 1px;
+      width: 2px;
+      height: 2px;
       opacity: 0.001;
       pointer-events: none;
       z-index: -10;
@@ -125,10 +125,9 @@
 <body class="min-h-screen bg-tds-dark text-gray-100 flex flex-col selection:bg-tds-red selection:text-white">
   <span class="font-preload" aria-hidden="true">TDS EXCLUSIVE HEADLINE</span>
 
-  <!-- Off-screen Video Element for reliable Android hardware decoding & seeking -->
+  <!-- Off-screen Video Element for live audio playback & frame-accurate decoding -->
   <video
     id="hidden-video"
-    muted
     playsinline
     webkit-playsinline
     preload="auto"
@@ -162,7 +161,6 @@
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow-md shadow-tds-red/20 shrink-0">
-          <!-- We use this visible logo directly for the canvas watermark too! -->
           <img
             id="header-brand-logo"
             src="TDS%20Logo%20no%20background.png"
@@ -222,8 +220,9 @@
             ></canvas>
           </div>
 
-          <div class="mt-3 flex items-center justify-between gap-2 px-1 text-xs text-gray-400">
-            <div class="flex items-center gap-2">
+          <!-- Playback & Audio Controls Bar -->
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-gray-400">
+            <div class="flex items-center gap-1.5">
               <button
                 type="button"
                 id="toggle-play-btn"
@@ -234,12 +233,21 @@
               </button>
               <button
                 type="button"
+                id="toggle-mute-btn"
+                disabled
+                class="px-2.5 py-1.5 rounded-lg bg-tds-red/20 hover:bg-tds-red/30 border border-tds-red/40 disabled:opacity-40 disabled:pointer-events-none text-red-200 font-medium flex items-center gap-1 transition"
+                title="Toggle Preview Sound"
+              >
+                <span id="mute-btn-label">Sound On</span>
+              </button>
+              <button
+                type="button"
                 id="restart-loop-btn"
                 disabled
                 class="px-2.5 py-1.5 rounded-lg bg-gray-800/70 hover:bg-gray-700 disabled:opacity-40 disabled:pointer-events-none text-gray-300 transition"
                 title="Jump to Start Time"
               >
-                Restart Trim
+                Restart
               </button>
             </div>
             <div class="font-mono text-xs text-gray-300 bg-black/50 px-2.5 py-1 rounded-lg border border-tds-border">
@@ -251,7 +259,7 @@
         </div>
       </section>
 
-      <!-- Right / Bottom Column: Controls, Trimmer, Headline & Export -->
+      <!-- Right / Bottom Column: Controls, Trimmer, Advanced Settings, Headline & Export -->
       <section class="lg:col-span-7 flex flex-col gap-5">
 
         <!-- Step 1: Video Upload Dropzone -->
@@ -407,27 +415,85 @@
           </div>
         </div>
 
-        <!-- Step 3: Logo Placement & Framing Controls -->
+        <!-- Step 3: Advanced Settings (Audio Volume & Logo Branding) -->
         <div class="bg-tds-panel border border-tds-border rounded-2xl p-4 sm:p-5 shadow-xl">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
-            <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
-              Logo Placement Corner
-            </h2>
+          <div class="flex items-center justify-between mb-3.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-tds-red text-white text-xs font-bold flex items-center justify-center">3</span>
+              <h2 class="font-oswald font-semibold text-base uppercase tracking-wide text-white">
+                Advanced Settings (Audio &amp; Branding)
+              </h2>
+            </div>
+            <span class="text-xs text-gray-400">
+              Live Preview &amp; Export
+            </span>
           </div>
-          <div>
-            <label for="logo-corner-input" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
-              Select Logo Position on Canvas
-            </label>
-            <select
-              id="logo-corner-input"
-              class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none px-3.5 py-2.5 text-sm text-white cursor-pointer"
-            >
-              <option value="top-left" selected>Top-Left Corner</option>
-              <option value="top-right">Top-Right Corner</option>
-              <option value="bottom-left">Bottom-Left Corner</option>
-              <option value="bottom-right">Bottom-Right Corner</option>
-            </select>
+
+          <!-- Audio Volume Slider (0% - 150%) -->
+          <div class="bg-black/35 border border-tds-border rounded-xl p-3.5 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <label for="audio-volume-slider" class="text-xs font-semibold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-tds-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <span>Video Audio Volume</span>
+              </label>
+              <span id="audio-volume-readout" class="text-xs font-mono text-emerald-300 bg-black/50 px-2.5 py-0.5 rounded border border-tds-border">
+                100% (Normal)
+              </span>
+            </div>
+            <input
+              type="range"
+              id="audio-volume-slider"
+              min="0"
+              max="150"
+              step="1"
+              value="100"
+              class="w-full"
+            />
+            <div class="flex justify-between text-[11px] text-gray-500 mt-1">
+              <span>0% (Muted)</span>
+              <span>100% (Original)</span>
+              <span>150% (Boost)</span>
+            </div>
+          </div>
+
+          <!-- Logo Corner & Logo Size Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="logo-corner-input" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+                Logo Placement Corner
+              </label>
+              <select
+                id="logo-corner-input"
+                class="w-full rounded-xl bg-black/40 border border-gray-700 focus:border-tds-red focus:ring-1 focus:ring-tds-red focus:outline-none px-3.5 py-2.5 text-sm text-white cursor-pointer"
+              >
+                <option value="top-left" selected>Top-Left Corner</option>
+                <option value="top-right">Top-Right Corner</option>
+                <option value="bottom-left">Bottom-Left Corner</option>
+                <option value="bottom-right">Bottom-Right Corner</option>
+              </select>
+            </div>
+
+            <div class="bg-black/35 border border-tds-border rounded-xl p-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="logo-size-slider" class="text-xs font-semibold uppercase tracking-wider text-gray-300">
+                  Logo Size
+                </label>
+                <span id="logo-size-readout" class="text-xs font-mono text-gray-400">
+                  54px
+                </span>
+              </div>
+              <input
+                type="range"
+                id="logo-size-slider"
+                min="36"
+                max="80"
+                step="2"
+                value="54"
+                class="w-full"
+              />
+            </div>
           </div>
         </div>
 
@@ -567,7 +633,6 @@
       const EXPORT_WIDTH = 720;
       const EXPORT_HEIGHT = 900;
       const EXPORT_FPS = 30;
-      const FRAME_DURATION_US = 33333;
       const MIN_CLIP_DURATION = 5.0;
       const MAX_CLIP_DURATION = 30.0;
 
@@ -579,7 +644,7 @@
       const canvas = document.getElementById('video-preview-canvas');
       const ctx = canvas.getContext('2d', { alpha: false });
 
-      // Preload dedicated JS Image object for Canvas watermark
+      // Preload dedicated JS Image object for Canvas watermark (same-origin, no CORS taint)
       const canvasLogoImg = new Image();
       canvasLogoImg.src = 'TDS%20Logo%20no%20background.png';
 
@@ -598,7 +663,12 @@
       const videoOffsetYSlider = document.getElementById('videoOffsetY');
       const videoOffsetYReadout = document.getElementById('video-offset-y-readout');
 
+      const audioVolumeSlider = document.getElementById('audio-volume-slider');
+      const audioVolumeReadout = document.getElementById('audio-volume-readout');
       const logoCornerInput = document.getElementById('logo-corner-input');
+      const logoSizeSlider = document.getElementById('logo-size-slider');
+      const logoSizeReadout = document.getElementById('logo-size-readout');
+
       const categoryInput = document.getElementById('category-input');
       const badgePreviewLabel = document.getElementById('badge-preview-label');
       const headlineInput = document.getElementById('main-headline-input');
@@ -608,6 +678,8 @@
 
       const togglePlayBtn = document.getElementById('toggle-play-btn');
       const playBtnLabel = document.getElementById('play-btn-label');
+      const toggleMuteBtn = document.getElementById('toggle-mute-btn');
+      const muteBtnLabel = document.getElementById('mute-btn-label');
       const restartLoopBtn = document.getElementById('restart-loop-btn');
       const currentTimeReadout = document.getElementById('current-time-readout');
       const totalTimeReadout = document.getElementById('total-time-readout');
@@ -624,11 +696,35 @@
       let startTime = 0.0;
       let endTime = 10.0;
       let isExporting = false;
+      let isPreviewMuted = false;
+      let lastNonZeroVolume = 100;
       let currentVideoObjectUrl = null;
       let currentExportBlobUrl = null;
 
       canvas.width = EXPORT_WIDTH;
       canvas.height = EXPORT_HEIGHT;
+
+      function syncAudioControlsUI() {
+        const sliderVal = parseInt(audioVolumeSlider ? audioVolumeSlider.value : 100, 10);
+        const effectivelyMuted = isPreviewMuted || hiddenVideo.muted || sliderVal === 0;
+
+        if (effectivelyMuted) {
+          muteBtnLabel.textContent = 'Muted';
+          toggleMuteBtn.className =
+            'px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:pointer-events-none text-gray-300 font-medium flex items-center gap-1 transition';
+          audioVolumeReadout.textContent = '0% (Muted)';
+          audioVolumeReadout.className =
+            'text-xs font-mono text-gray-400 bg-black/50 px-2.5 py-0.5 rounded border border-tds-border';
+        } else {
+          muteBtnLabel.textContent = `Sound (${sliderVal}%)`;
+          toggleMuteBtn.className =
+            'px-2.5 py-1.5 rounded-lg bg-tds-red/20 hover:bg-tds-red/30 border border-tds-red/40 disabled:opacity-40 disabled:pointer-events-none text-red-200 font-medium flex items-center gap-1 transition';
+          const statusTag = sliderVal === 100 ? 'Normal' : sliderVal > 100 ? 'Boosted' : 'Reduced';
+          audioVolumeReadout.textContent = `${sliderVal}% (${statusTag})`;
+          audioVolumeReadout.className =
+            'text-xs font-mono text-emerald-300 bg-black/50 px-2.5 py-0.5 rounded border border-tds-border';
+        }
+      }
 
       function checkWebCodecsSupport() {
         if (typeof window.VideoEncoder === 'undefined' || typeof window.VideoFrame === 'undefined') {
@@ -734,6 +830,28 @@
         videoOffsetYReadout.textContent = `${val}% (${posLabel})`;
       });
 
+      // Audio Volume Slider event listener
+      audioVolumeSlider.addEventListener('input', () => {
+        const val = parseInt(audioVolumeSlider.value, 10);
+        if (val <= 0) {
+          isPreviewMuted = true;
+          hiddenVideo.muted = true;
+          hiddenVideo.volume = 0;
+        } else {
+          lastNonZeroVolume = val;
+          isPreviewMuted = false;
+          if (!isExporting) {
+            hiddenVideo.muted = false;
+          }
+          hiddenVideo.volume = Math.max(0, Math.min(1.0, val / 100));
+        }
+        syncAudioControlsUI();
+      });
+
+      logoSizeSlider.addEventListener('input', () => {
+        logoSizeReadout.textContent = `${logoSizeSlider.value}px`;
+      });
+
       headlineVerticalOffsetSlider.addEventListener('input', () => {
         const val = parseInt(headlineVerticalOffsetSlider.value, 10);
         headlineOffsetReadout.textContent = `${val}px`;
@@ -746,7 +864,7 @@
       });
 
       // =========================================================================
-      // Reliable Mobile Video Loading & Frame Decoding
+      // Video File Loading with Live Preview Audio Enabled
       // =========================================================================
       function loadVideoFile(file) {
         if (!file || !file.type.startsWith('video/')) {
@@ -763,9 +881,11 @@
         uploadedFilename.textContent = `Loaded: ${file.name}`;
         uploadedFilename.className = 'text-xs text-emerald-400 font-medium mt-1';
 
+        const sliderVal = parseInt(audioVolumeSlider.value, 10);
         hiddenVideo.src = currentVideoObjectUrl;
-        hiddenVideo.muted = true;
-        hiddenVideo.defaultMuted = true;
+        hiddenVideo.muted = isPreviewMuted || sliderVal === 0;
+        hiddenVideo.defaultMuted = false;
+        hiddenVideo.volume = Math.max(0, Math.min(1.0, sliderVal / 100));
         hiddenVideo.playsInline = true;
         hiddenVideo.load();
       }
@@ -796,18 +916,28 @@
         validateAndApplyTrim('end');
 
         togglePlayBtn.disabled = false;
+        toggleMuteBtn.disabled = false;
         restartLoopBtn.disabled = false;
 
-        // Force initial frame seek & play so mobile browsers decode immediately
+        const sliderVal = parseInt(audioVolumeSlider.value, 10);
         hiddenVideo.currentTime = startTime || 0.01;
+        hiddenVideo.muted = isPreviewMuted || sliderVal === 0;
+        hiddenVideo.volume = Math.max(0, Math.min(1.0, sliderVal / 100));
+
         hiddenVideo.play().then(() => {
           playBtnLabel.textContent = 'Pause';
+          syncAudioControlsUI();
         }).catch(() => {
-          playBtnLabel.textContent = 'Play';
+          hiddenVideo.muted = true;
+          syncAudioControlsUI();
+          hiddenVideo.play().then(() => {
+            playBtnLabel.textContent = 'Pause';
+          }).catch(() => {
+            playBtnLabel.textContent = 'Play';
+          });
         });
       });
 
-      // Redraw immediately when mobile browser finishes decoding a frame
       hiddenVideo.addEventListener('loadeddata', renderVideocardFrame);
       hiddenVideo.addEventListener('canplay', renderVideocardFrame);
       hiddenVideo.addEventListener('seeked', () => {
@@ -839,20 +969,47 @@
 
       togglePlayBtn.addEventListener('click', () => {
         if (!hasLoadedVideo || isExporting) return;
+        const sliderVal = parseInt(audioVolumeSlider.value, 10);
         if (hiddenVideo.paused) {
+          hiddenVideo.muted = isPreviewMuted || sliderVal === 0;
+          hiddenVideo.volume = Math.max(0, Math.min(1.0, sliderVal / 100));
           hiddenVideo.play();
           playBtnLabel.textContent = 'Pause';
         } else {
           hiddenVideo.pause();
           playBtnLabel.textContent = 'Play';
         }
+        syncAudioControlsUI();
+      });
+
+      toggleMuteBtn.addEventListener('click', () => {
+        if (!hasLoadedVideo || isExporting) return;
+        if (hiddenVideo.muted || isPreviewMuted || parseInt(audioVolumeSlider.value, 10) === 0) {
+          isPreviewMuted = false;
+          hiddenVideo.muted = false;
+          if (parseInt(audioVolumeSlider.value, 10) === 0) {
+            audioVolumeSlider.value = lastNonZeroVolume > 0 ? lastNonZeroVolume : 100;
+          }
+          hiddenVideo.volume = Math.max(0, Math.min(1.0, parseInt(audioVolumeSlider.value, 10) / 100));
+        } else {
+          const currentVal = parseInt(audioVolumeSlider.value, 10);
+          if (currentVal > 0) lastNonZeroVolume = currentVal;
+          isPreviewMuted = true;
+          hiddenVideo.muted = true;
+          audioVolumeSlider.value = 0;
+        }
+        syncAudioControlsUI();
       });
 
       restartLoopBtn.addEventListener('click', () => {
         if (!hasLoadedVideo || isExporting) return;
+        const sliderVal = parseInt(audioVolumeSlider.value, 10);
         hiddenVideo.currentTime = startTime;
+        hiddenVideo.muted = isPreviewMuted || sliderVal === 0;
+        hiddenVideo.volume = Math.max(0, Math.min(1.0, sliderVal / 100));
         hiddenVideo.play();
         playBtnLabel.textContent = 'Pause';
+        syncAudioControlsUI();
       });
 
       function getWrappedLines(context, text, maxWidth) {
@@ -963,7 +1120,7 @@
         ctx.fillRect(0, ch - 420, cw, 420);
 
         // ---------------------------------------------------------------------
-        // 1. Dynamic Category Badge (Automatically swaps sides if logo is top-right)
+        // 1. Dynamic Category Badge (Swaps sides if logo is top-right)
         // ---------------------------------------------------------------------
         const corner = logoCornerInput ? logoCornerInput.value : 'top-left';
 
@@ -1000,7 +1157,7 @@
         ctx.restore();
 
         // ---------------------------------------------------------------------
-        // 2. Official TDS Brand Logo Watermark (Uses visible header logo or preloaded Image)
+        // 2. Official TDS Brand Logo Watermark (Dynamic Corner & Size)
         // ---------------------------------------------------------------------
         ctx.save();
         const activeLogo =
@@ -1009,7 +1166,7 @@
             : (headerLogo && headerLogo.complete && headerLogo.naturalWidth > 0 ? headerLogo : null);
 
         if (activeLogo) {
-          const targetLogoHeight = 54;
+          const targetLogoHeight = parseInt(logoSizeSlider ? logoSizeSlider.value : 54, 10) || 54;
           const targetLogoWidth = (activeLogo.naturalWidth / activeLogo.naturalHeight) * targetLogoHeight;
           const padX = 12;
           const padY = 6;
@@ -1127,39 +1284,91 @@
         }
       }
 
+      // =========================================================================
+      // Frame-Accurate Seek Helper (Fixes Listener Leak & Stuck Frames)
+      // =========================================================================
       function seekVideoToTime(videoEl, targetTime) {
         return new Promise((resolve) => {
-          const clampedTarget = Math.max(0, Math.min(targetTime, videoEl.duration || targetTime));
+          const maxDur = Number.isFinite(videoEl.duration) && videoEl.duration > 0
+            ? Math.max(0, videoEl.duration - 0.01)
+            : targetTime;
+          const clampedTarget = Math.max(0, Math.min(targetTime, maxDur));
 
-          if (Math.abs(videoEl.currentTime - clampedTarget) < 0.001 && !videoEl.seeking) {
-            resolve();
+          let settled = false;
+          let fallbackTimer = null;
+
+          const finishSeek = () => {
+            if (settled) return;
+            settled = true;
+            if (fallbackTimer) clearTimeout(fallbackTimer);
+            videoEl.removeEventListener('seeked', onSeekedHandler);
+            requestAnimationFrame(() => resolve());
+          };
+
+          const onSeekedHandler = () => {
+            finishSeek();
+          };
+
+          if (Math.abs(videoEl.currentTime - clampedTarget) < 0.002 && !videoEl.seeking && videoEl.readyState >= 2) {
+            finishSeek();
             return;
           }
 
-          let settled = false;
-          const onSeekedHandler = () => {
-            if (settled) return;
-            settled = true;
-            videoEl.removeEventListener('seeked', onSeekedHandler);
-            resolve();
-          };
+          fallbackTimer = setTimeout(() => {
+            finishSeek();
+          }, 2000);
 
-          const fallbackTimer = setTimeout(() => {
-            if (settled) return;
-            settled = true;
-            videoEl.removeEventListener('seeked', onSeekedHandler);
-            resolve();
-          }, 600);
-
-          videoEl.addEventListener('seeked', () => {
-            clearTimeout(fallbackTimer);
-            onSeekedHandler();
-          }, { once: true });
-
+          videoEl.addEventListener('seeked', onSeekedHandler);
           videoEl.currentTime = clampedTarget;
         });
       }
 
+      // =========================================================================
+      // Cross-Platform H.264 Config Resolver (Fixes PC 720x900 Level 3.1 Rejection)
+      // =========================================================================
+      async function getSupportedVideoEncoderConfig() {
+        const candidateCodecs = [
+          'avc1.640028', // High Profile Level 4.0 (Best for 720x900 on PC & Android)
+          'avc1.4d0028', // Main Profile Level 4.0
+          'avc1.420028', // Baseline Profile Level 4.0
+          'avc1.42e028', // Constrained Baseline Level 4.0
+          'avc1.42001f'  // Baseline Level 3.1 fallback
+        ];
+        const accelerationModes = ['no-preference', 'prefer-hardware', 'prefer-software'];
+
+        for (const acc of accelerationModes) {
+          for (const codec of candidateCodecs) {
+            const config = {
+              codec: codec,
+              width: EXPORT_WIDTH,
+              height: EXPORT_HEIGHT,
+              bitrate: 5000000,
+              framerate: EXPORT_FPS,
+              hardwareAcceleration: acc
+            };
+            try {
+              const support = await VideoEncoder.isConfigSupported(config);
+              if (support && support.supported) {
+                return support.config || config;
+              }
+            } catch (e) {
+              // Continue testing next profile
+            }
+          }
+        }
+
+        return {
+          codec: 'avc1.420028',
+          width: EXPORT_WIDTH,
+          height: EXPORT_HEIGHT,
+          bitrate: 5000000,
+          framerate: EXPORT_FPS
+        };
+      }
+
+      // =========================================================================
+      // Client-Side MP4 Export Engine (Synced Audio + Custom Gain & Glitch-Free Video)
+      // =========================================================================
       async function exportVideocardMp4() {
         if (!checkWebCodecsSupport()) return;
 
@@ -1184,16 +1393,24 @@
           exportEnd = exportStart + MAX_CLIP_DURATION;
         }
 
+        // Capture user's chosen volume gain before locking UI
+        const sliderVolumePct = parseInt(audioVolumeSlider ? audioVolumeSlider.value : 100, 10);
+        const exportVolumeGain = isPreviewMuted ? 0 : Math.max(0, sliderVolumePct / 100);
+
+        // Lock UI & mute hidden video during rendering pass
         isExporting = true;
         hiddenVideo.pause();
+        hiddenVideo.muted = true;
         playBtnLabel.textContent = 'Play';
         exportMp4Btn.disabled = true;
         togglePlayBtn.disabled = true;
+        toggleMuteBtn.disabled = true;
         restartLoopBtn.disabled = true;
         startTimeInput.disabled = true;
         endTimeInput.disabled = true;
         startTimeSlider.disabled = true;
         endTimeSlider.disabled = true;
+        audioVolumeSlider.disabled = true;
         exportStatusBox.classList.add('hidden');
 
         canvas.width = EXPORT_WIDTH;
@@ -1204,23 +1421,46 @@
           exportProgressBar.style.width = '0%';
 
           let audioBuffer = null;
-          try {
-            const response = await fetch(currentVideoObjectUrl);
-            const arrayBuffer = await response.arrayBuffer();
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-            if (audioCtx.state !== 'closed' && typeof audioCtx.close === 'function') {
-              await audioCtx.close();
+          if (exportVolumeGain > 0.001) {
+            try {
+              const response = await fetch(currentVideoObjectUrl);
+              const arrayBuffer = await response.arrayBuffer();
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+              if (audioCtx.state !== 'closed' && typeof audioCtx.close === 'function') {
+                await audioCtx.close();
+              }
+            } catch (audioErr) {
+              console.warn('Audio decoding failed or no audio track found. Proceeding with silent video export.', audioErr);
             }
-          } catch (audioErr) {
-            console.warn('Audio decoding failed or no audio track found. Proceeding with silent video export.', audioErr);
           }
 
-          const hasAudioSupport = Boolean(
+          let hasAudioSupport = Boolean(
+            exportVolumeGain > 0.001 &&
             audioBuffer &&
             typeof window.AudioEncoder !== 'undefined' &&
             typeof window.AudioData !== 'undefined'
           );
+
+          const audioConfig = hasAudioSupport
+            ? {
+                codec: 'mp4a.40.2',
+                sampleRate: audioBuffer.sampleRate,
+                numberOfChannels: audioBuffer.numberOfChannels,
+                bitrate: 128000
+              }
+            : null;
+
+          if (hasAudioSupport && typeof AudioEncoder.isConfigSupported === 'function') {
+            try {
+              const audioSupport = await AudioEncoder.isConfigSupported(audioConfig);
+              if (!audioSupport || !audioSupport.supported) {
+                hasAudioSupport = false;
+              }
+            } catch (e) {
+              hasAudioSupport = false;
+            }
+          }
 
           const muxerConfig = {
             target: new Mp4Muxer.ArrayBufferTarget(),
@@ -1229,49 +1469,129 @@
               width: EXPORT_WIDTH,
               height: EXPORT_HEIGHT
             },
-            audio: {
-              codec: 'aac',
-              sampleRate: 44100,
-              numberOfChannels: 2
-            },
             fastStart: 'in-memory'
           };
 
           if (hasAudioSupport) {
-            muxerConfig.audio.sampleRate = audioBuffer.sampleRate;
-            muxerConfig.audio.numberOfChannels = audioBuffer.numberOfChannels;
-          } else {
-            delete muxerConfig.audio;
+            muxerConfig.audio = {
+              codec: 'aac',
+              sampleRate: audioBuffer.sampleRate,
+              numberOfChannels: audioBuffer.numberOfChannels
+            };
           }
 
           const muxer = new Mp4Muxer.Muxer(muxerConfig);
 
-          let audioEncoder = null;
+          exportProgressText.textContent = 'Rendering: 0% (Initializing H.264 encoder...)';
+
+          const videoEncoderConfig = await getSupportedVideoEncoderConfig();
+          let encoderError = null;
+          let encodedVideoChunks = 0;
+
+          const encoder = new VideoEncoder({
+            output: (chunk, meta) => {
+              try {
+                // Guarantee non-null colorSpace so mp4-muxer never throws on PC
+                const safeMeta = meta ? Object.assign({}, meta) : {};
+                if (safeMeta.decoderConfig) {
+                  safeMeta.decoderConfig = Object.assign({}, safeMeta.decoderConfig);
+                  if (!safeMeta.decoderConfig.colorSpace) {
+                    safeMeta.decoderConfig.colorSpace = {
+                      primaries: 'bt709',
+                      transfer: 'bt709',
+                      matrix: 'bt709',
+                      fullRange: false
+                    };
+                  }
+                }
+                muxer.addVideoChunk(chunk, safeMeta);
+                encodedVideoChunks++;
+              } catch (muxErr) {
+                console.error('Muxer addVideoChunk error:', muxErr);
+                encoderError = muxErr;
+              }
+            },
+            error: (err) => {
+              console.error('VideoEncoder error:', err);
+              encoderError = err;
+            }
+          });
+
+          encoder.configure(videoEncoderConfig);
+
+          // Exact 30 FPS frame-locked loop
+          const exactDurationSec = Math.max(0.1, exportEnd - exportStart);
+          const totalFrames = Math.max(1, Math.round(exactDurationSec * EXPORT_FPS));
+
+          for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
+            if (encoderError) {
+              throw encoderError;
+            }
+
+            const targetVideoTime = Math.min(exportEnd, exportStart + (frameIndex / EXPORT_FPS));
+            await seekVideoToTime(hiddenVideo, targetVideoTime);
+            renderVideocardFrame();
+
+            const timestampUs = Math.round((frameIndex / EXPORT_FPS) * 1000000);
+            const nextTimestampUs = Math.round(((frameIndex + 1) / EXPORT_FPS) * 1000000);
+            const durationUs = nextTimestampUs - timestampUs;
+
+            const videoFrame = new VideoFrame(canvas, {
+              timestamp: timestampUs,
+              duration: durationUs
+            });
+
+            const isKeyFrame = frameIndex % 60 === 0;
+            encoder.encode(videoFrame, { keyFrame: isKeyFrame });
+            videoFrame.close();
+
+            while (encoder.encodeQueueSize > 8 && !encoderError) {
+              await new Promise((resolve) => {
+                encoder.addEventListener('dequeue', resolve, { once: true });
+                setTimeout(resolve, 40);
+              });
+            }
+
+            const percent = Math.min(95, Math.round(((frameIndex + 1) / totalFrames) * 95));
+            exportProgressText.textContent = `Rendering: ${percent}% (${frameIndex + 1} / ${totalFrames} frames)`;
+            exportProgressBar.style.width = `${percent}%`;
+            currentTimeReadout.textContent = `${targetVideoTime.toFixed(1)}s`;
+          }
+
+          await encoder.flush();
+          encoder.close();
+
+          if (encoderError) {
+            throw encoderError;
+          }
+
+          if (encodedVideoChunks === 0) {
+            throw new Error('VideoEncoder produced 0 frames. Please try a different video file.');
+          }
+
+          // Encode trimmed audio in AAC-aligned 4096-sample blocks with custom volume gain
           if (hasAudioSupport) {
-            audioEncoder = new AudioEncoder({
+            exportProgressText.textContent = `Rendering: 97% (Encoding AAC audio at ${sliderVolumePct}% volume...)`;
+            exportProgressBar.style.width = '97%';
+
+            const audioEncoder = new AudioEncoder({
               output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
               error: (err) => console.error('AudioEncoder error:', err)
             });
 
-            audioEncoder.configure({
-              codec: 'mp4a.40.2',
-              sampleRate: audioBuffer.sampleRate,
-              numberOfChannels: audioBuffer.numberOfChannels,
-              bitrate: 128000
-            });
-
-            exportProgressText.textContent = 'Rendering: 0% (Encoding trimmed AAC audio track...)';
+            audioEncoder.configure(audioConfig);
 
             const sampleRate = audioBuffer.sampleRate;
             const numberOfChannels = audioBuffer.numberOfChannels;
             const startSample = Math.floor(exportStart * sampleRate);
-            const endSample = Math.min(audioBuffer.length, Math.floor(exportEnd * sampleRate));
+            const exactAudioSamples = Math.round((totalFrames / EXPORT_FPS) * sampleRate);
+            const endSample = Math.min(audioBuffer.length, startSample + exactAudioSamples);
             const totalSamples = Math.max(0, endSample - startSample);
-            const chunkSize = sampleRate;
+            const aacBlockSize = 1024 * 4; // 4096 samples
 
-            for (let offset = 0; offset < totalSamples; offset += chunkSize) {
+            for (let offset = 0; offset < totalSamples; offset += aacBlockSize) {
               const chunkStart = startSample + offset;
-              const chunkEnd = Math.min(endSample, chunkStart + chunkSize);
+              const chunkEnd = Math.min(endSample, chunkStart + aacBlockSize);
               const numberOfFrames = chunkEnd - chunkStart;
 
               if (numberOfFrames <= 0) break;
@@ -1279,15 +1599,21 @@
               const planarBuffer = new Float32Array(numberOfFrames * numberOfChannels);
               for (let c = 0; c < numberOfChannels; c++) {
                 const channelData = audioBuffer.getChannelData(c).subarray(chunkStart, chunkEnd);
-                planarBuffer.set(channelData, c * numberOfFrames);
+                const channelOffset = c * numberOfFrames;
+                for (let s = 0; s < numberOfFrames; s++) {
+                  const scaledSample = channelData[s] * exportVolumeGain;
+                  planarBuffer[channelOffset + s] =
+                    scaledSample > 1.0 ? 1.0 : (scaledSample < -1.0 ? -1.0 : scaledSample);
+                }
               }
 
+              const audioTimestampUs = Math.round((offset / sampleRate) * 1000000);
               const audioData = new AudioData({
                 format: 'f32-planar',
                 sampleRate: sampleRate,
                 numberOfFrames: numberOfFrames,
                 numberOfChannels: numberOfChannels,
-                timestamp: (offset / audioBuffer.sampleRate) * 1000000,
+                timestamp: audioTimestampUs,
                 data: planarBuffer
               });
 
@@ -1299,66 +1625,9 @@
             audioEncoder.close();
           }
 
-          exportProgressText.textContent = 'Rendering: 0% (Initializing H.264 hardware encoder...)';
-
-          let encoderError = null;
-          const encoder = new VideoEncoder({
-            output: (chunk, meta) => {
-              muxer.addVideoChunk(chunk, meta);
-            },
-            error: (err) => {
-              console.error('VideoEncoder error:', err);
-              encoderError = err;
-            }
-          });
-
-          encoder.configure({
-            codec: 'avc1.42001f',
-            width: EXPORT_WIDTH,
-            height: EXPORT_HEIGHT,
-            bitrate: 5000000,
-            framerate: EXPORT_FPS
-          });
-
-          const stepSec = 1 / EXPORT_FPS;
-          const totalFrames = Math.max(1, Math.round((exportEnd - exportStart) * EXPORT_FPS));
-          let currentTime = exportStart;
-          let frameIndex = 0;
-
-          while (currentTime <= exportEnd && frameIndex < totalFrames) {
-            if (encoderError) {
-              throw encoderError;
-            }
-
-            await seekVideoToTime(hiddenVideo, currentTime);
-            renderVideocardFrame();
-
-            const videoFrame = new VideoFrame(canvas, {
-              timestamp: frameIndex * FRAME_DURATION_US
-            });
-
-            const isKeyFrame = frameIndex % 60 === 0;
-            encoder.encode(videoFrame, { keyFrame: isKeyFrame });
-            videoFrame.close();
-
-            if (encoder.encodeQueueSize > 12) {
-              await encoder.flush();
-            }
-
-            frameIndex++;
-            currentTime += stepSec;
-
-            const percent = Math.min(99, Math.round((frameIndex / totalFrames) * 100));
-            exportProgressText.textContent = `Rendering: ${percent}% (${frameIndex} / ${totalFrames} frames)`;
-            exportProgressBar.style.width = `${percent}%`;
-            currentTimeReadout.textContent = `${Math.min(exportEnd, currentTime).toFixed(1)}s`;
-          }
-
-          exportProgressText.textContent = 'Rendering: 100% (Flushing & finalizing MP4 container...)';
+          exportProgressText.textContent = 'Rendering: 100% (Finalizing MP4 container...)';
           exportProgressBar.style.width = '100%';
 
-          await encoder.flush();
-          encoder.close();
           muxer.finalize();
 
           const mp4Buffer = muxer.target.buffer;
@@ -1380,7 +1649,7 @@
           const sizeMb = (mp4Blob.size / (1024 * 1024)).toFixed(2);
           exportProgressText.textContent = `Rendering: 100% — Export complete (${sizeMb} MB)`;
           showStatusBanner(
-            `Success! tds-videocard.mp4 (${sizeMb} MB, ${frameIndex} frames) has been generated.`,
+            `Success! tds-videocard.mp4 (${sizeMb} MB, ${totalFrames} frames) has been generated.`,
             false,
             currentExportBlobUrl
           );
@@ -1392,16 +1661,22 @@
           isExporting = false;
           exportMp4Btn.disabled = false;
           togglePlayBtn.disabled = !hasLoadedVideo;
+          toggleMuteBtn.disabled = !hasLoadedVideo;
           restartLoopBtn.disabled = !hasLoadedVideo;
           startTimeInput.disabled = false;
           endTimeInput.disabled = false;
           startTimeSlider.disabled = false;
           endTimeSlider.disabled = false;
+          audioVolumeSlider.disabled = false;
 
           if (hasLoadedVideo) {
+            const currentSliderVal = parseInt(audioVolumeSlider.value, 10);
+            hiddenVideo.muted = isPreviewMuted || currentSliderVal === 0;
+            hiddenVideo.volume = Math.max(0, Math.min(1.0, currentSliderVal / 100));
             hiddenVideo.currentTime = startTime;
             hiddenVideo.play().catch(() => {});
             playBtnLabel.textContent = 'Pause';
+            syncAudioControlsUI();
           }
         }
       }

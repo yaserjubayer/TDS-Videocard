@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tds-videocard-studio-v4';
+const CACHE_NAME = 'tds-videocard-studio-v5';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Activate: Purge all old caches (v1-v3) and take control of open pages immediately
+// 2. Activate: Purge all old caches (v1-v4) and take control of open pages immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
